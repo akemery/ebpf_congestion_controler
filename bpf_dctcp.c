@@ -6,11 +6,10 @@
  * the kernel BPF logic.
  */
 
-#include <stddef.h>
-#include <linux/bpf.h>
-#include <linux/types.h>
+#include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
+#include <bpf/bpf_core_read.h>
 #include "bpf_tcp_helpers.h"
 
 char _license[] SEC("license") = "GPL";
@@ -60,7 +59,7 @@ void BPF_PROG(dctcp_init, struct sock *sk)
 	ca->loss_cwnd = 0;
 	ca->ce_state = 0;
 
-	stg = bpf_sk_storage_get(&sk_stg_map, (void *)tp, NULL, 0);
+	stg = bpf_sk_storage_get(&sk_stg_map, (void *)tp, (void*)0, 0);
 	if (stg) {
 		stg_result = *stg;
 		bpf_sk_storage_delete(&sk_stg_map, (void *)tp);
